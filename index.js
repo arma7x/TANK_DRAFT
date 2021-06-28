@@ -13,7 +13,7 @@ io.on('connection', (socket) => {
 
   setInterval(() => {
     io.emit('positions', positions);
-  }, 100);
+  }, 16);
 
   if (!positions[socket.id]) {
     positions[socket.id] = [];

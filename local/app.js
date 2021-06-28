@@ -80,7 +80,7 @@ game.PlayScreen = me.Stage.extend({
 
 me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
   const plyr = currentPlayer
-  const time = 30;
+  const time = 100;
   const yAxis = ['up', 'down'];
 
   if (keyCode === 32) {
