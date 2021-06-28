@@ -15,6 +15,7 @@ var game = {
     me.state.set(me.state.PLAY, this.playScreen);
     me.state.change(me.state.PLAY);
     
+    socket = io("wss://tank-draft.herokuapp.com", { transports: ["websocket"] });
     socket.on("positions", function(data) {
       if (data[socket.id].length > 0) {
         console.log('Exec', socket.id, data[socket.id]);
@@ -56,7 +57,6 @@ var game = {
 
     me.audio.init("ogg");
     me.loader.preload(game.resources, this.loaded.bind(this));
-    socket = io("ws://127.0.0.1:3000", { transports: ["websocket"] });
   },
 };
 
