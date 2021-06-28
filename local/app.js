@@ -14,11 +14,11 @@ var game = {
     this.playScreen = new game.PlayScreen();
     me.state.set(me.state.PLAY, this.playScreen);
     me.state.change(me.state.PLAY);
-    
-    socket = io("wss://tank-draft.herokuapp.com", { transports: ["websocket"] });
+
+    socket = io("ws://127.0.0.1:3000", { transports: ["websocket"] });
+    // socket = io("wss://tank-draft.herokuapp.com", { transports: ["websocket"] });
     socket.on("positions", function(data) {
       if (data[socket.id].length > 0) {
-        console.log('Exec', socket.id, data[socket.id]);
         currentPlayer.pos.x = me.Math.clamp(data[socket.id][0], currentPlayer.minX, currentPlayer.maxX);
         currentPlayer.pos.y = me.Math.clamp(data[socket.id][1], currentPlayer.minY, currentPlayer.maxY);
         if (currentPlayer.__DIRECTION__ !== data[socket.id][2]) {
@@ -99,32 +99,33 @@ me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
     const b = me.game.world.addChild(me.pool.pull("bullet", bX, bY))
     b.__DIRECTION__ = bD;
   } else {
+    var x = plyr.pos.x, y = plyr.pos.y;
     if (action === "left") {
       if (plyr.__DIRECTION__ !== 'left') {
         rotateTank(plyr, 'left');
       } else
-        plyr.pos.x -= plyr.vel * time / 1000;
+        x -= plyr.vel * time / 1000;
     } else if (action === "right"){
       if (plyr.__DIRECTION__ !== 'right') {
         rotateTank(plyr, 'right');
       } else
-        plyr.pos.x += plyr.vel * time / 1000;
+        x += plyr.vel * time / 1000;
     } else if (action === "up") {
       if (plyr.__DIRECTION__ !== 'up') {
         rotateTank(plyr, 'up');
       } else
-        plyr.pos.y -= plyr.vel * time / 1000;
+        y -= plyr.vel * time / 1000;
     } else if (action === "down") {
       if (plyr.__DIRECTION__ !== 'down') {
         rotateTank(plyr, 'down');
       } else
-        plyr.pos.y += plyr.vel * time / 1000;
+        y += plyr.vel * time / 1000;
     }
-    me.Math.clamp(plyr.pos.y, plyr.minY, plyr.maxY);
-    me.Math.clamp(plyr.pos.x, plyr.minX, plyr.maxX);
-
+    x = me.Math.clamp(x, plyr.minX, plyr.maxX);
+    y = me.Math.clamp(y, plyr.minY, plyr.maxY);
+    socket.emit("move", {data: [x, y, plyr.__DIRECTION__]});
   }
-  socket.emit("move", {data: [plyr.pos.x, plyr.pos.y, plyr.__DIRECTION__]});
+  
 });
 
 game.Tank = me.Sprite.extend({
