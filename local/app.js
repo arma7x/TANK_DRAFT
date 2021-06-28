@@ -19,11 +19,11 @@ var game = {
     socket = io("wss://tank-draft.herokuapp.com", { transports: ["websocket"] });
     socket.on("positions", function(data) {
       if (data[socket.id].length > 0) {
-        currentPlayer.pos.x = me.Math.clamp(data[socket.id][0], currentPlayer.minX, currentPlayer.maxX);
-        currentPlayer.pos.y = me.Math.clamp(data[socket.id][1], currentPlayer.minY, currentPlayer.maxY);
-        if (currentPlayer.__DIRECTION__ !== data[socket.id][2]) {
-          rotateTank(currentPlayer, data[socket.id][2]);
-        }
+        //currentPlayer.pos.x = me.Math.clamp(data[socket.id][0], currentPlayer.minX, currentPlayer.maxX);
+        //currentPlayer.pos.y = me.Math.clamp(data[socket.id][1], currentPlayer.minY, currentPlayer.maxY);
+        //if (currentPlayer.__DIRECTION__ !== data[socket.id][2]) {
+          //rotateTank(currentPlayer, data[socket.id][2]);
+        //}
       }
       for (let p in data) {
         if (p !== socket.id && otherPlayers[p] == null) {
@@ -80,7 +80,7 @@ game.PlayScreen = me.Stage.extend({
 
 me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
   const plyr = currentPlayer
-  const time = 100;
+  const time = 30;
   const yAxis = ['up', 'down'];
 
   if (keyCode === 32) {
@@ -104,26 +104,26 @@ me.event.subscribe(me.event.KEYDOWN, function (action, keyCode, edge) {
       if (plyr.__DIRECTION__ !== 'left') {
         rotateTank(plyr, 'left');
       } else
-        x -= plyr.vel * time / 1000;
+        plyr.pos.x -= plyr.vel * time / 1000;
     } else if (action === "right"){
       if (plyr.__DIRECTION__ !== 'right') {
         rotateTank(plyr, 'right');
       } else
-        x += plyr.vel * time / 1000;
+        plyr.pos.x += plyr.vel * time / 1000;
     } else if (action === "up") {
       if (plyr.__DIRECTION__ !== 'up') {
         rotateTank(plyr, 'up');
       } else
-        y -= plyr.vel * time / 1000;
+        plyr.pos.y -= plyr.vel * time / 1000;
     } else if (action === "down") {
       if (plyr.__DIRECTION__ !== 'down') {
         rotateTank(plyr, 'down');
       } else
-        y += plyr.vel * time / 1000;
+        plyr.pos.y += plyr.vel * time / 1000;
     }
-    x = me.Math.clamp(x, plyr.minX, plyr.maxX);
-    y = me.Math.clamp(y, plyr.minY, plyr.maxY);
-    socket.emit("move", {data: [x, y, plyr.__DIRECTION__]});
+    plyr.pos.x = me.Math.clamp(plyr.pos.x, plyr.minX, plyr.maxX);
+    plyr.pos.y = me.Math.clamp(plyr.pos.y, plyr.minY, plyr.maxY);
+    socket.emit("move", {data: [plyr.pos.x, plyr.pos.y, plyr.__DIRECTION__]});
   }
   
 });
