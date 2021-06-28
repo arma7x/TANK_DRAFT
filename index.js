@@ -10,6 +10,11 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
+
+  setInterval(() => {
+    io.emit('positions', positions);
+  }, 100);
+
   if (!positions[socket.id]) {
     positions[socket.id] = [];
   }
@@ -21,7 +26,6 @@ io.on('connection', (socket) => {
   socket.on('move', msg => {
     if (positions[socket.id]) {
       positions[socket.id] = msg.data;
-      io.emit('positions', positions); // keypress
     }
   });
 
